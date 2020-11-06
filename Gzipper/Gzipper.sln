@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gzipper", "Gzipper\Gzipper.csproj", "{AD6D6787-6078-4DAC-97FF-91057288A913}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AD6D6787-6078-4DAC-97FF-91057288A913}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD6D6787-6078-4DAC-97FF-91057288A913}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD6D6787-6078-4DAC-97FF-91057288A913}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD6D6787-6078-4DAC-97FF-91057288A913}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
