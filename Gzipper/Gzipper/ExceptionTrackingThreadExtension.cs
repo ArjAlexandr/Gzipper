@@ -23,6 +23,14 @@ namespace Gzipper
             }
         }
         
+        public static void TryThrowException(this ExceptionTrackingThread thread)
+        {
+            if (thread.Exception != null)
+            {
+                ExceptionDispatchInfo.Throw(thread.Exception);
+            }
+        }
+        
         public static void TryThrowFirstException(this ICollection<ExceptionTrackingThread> threads)
         {
             var thread = threads.FirstOrDefault(t => t.Exception != null);

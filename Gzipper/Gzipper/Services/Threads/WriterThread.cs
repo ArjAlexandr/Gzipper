@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Gzipper.Models;
 using Gzipper.Services.IO;
 
@@ -25,12 +26,21 @@ namespace Gzipper.Services.Threads
         {
             while (!_blocksQueue.IsCompleted)
             {
-                var processingBlock = _blocksQueue.Dequeue(cancellationToken);
-
-                processingBlock.ProcessingThread.Join();
-
-                _writer.WriteNext(processingBlock.ByteBlock.Bytes);
+                ProcessingBlock processingBlock;
+                try
+                {
+                    processingBlock = _blocksQueue.Dequeue(cancellationToken);
+                }
+                catch(InvalidOperationException)
+                {
+                    break;
+                }
                 
+                processingBlock.ProcessingThread.Join();
+                processingBlock.ProcessingThread.TryThrowException();
+                
+                _writer.WriteNext(processingBlock.ByteBlock.Bytes);
+
                 _semaphore.Release();
             }
         }

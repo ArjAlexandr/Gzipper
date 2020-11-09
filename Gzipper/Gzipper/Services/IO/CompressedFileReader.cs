@@ -49,9 +49,9 @@ namespace Gzipper.Services.IO
 
                 return new ByteBlock {Bytes = buffer};
             }
-            catch (Exception e)
+            catch (FormatException e)
             {
-                throw new InvalidOperationException("Unsupported file format", e);
+                throw new FormatException("Unsupported file format", e);
             }
         }
 
