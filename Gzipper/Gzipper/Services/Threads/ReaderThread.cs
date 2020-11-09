@@ -39,7 +39,7 @@ namespace Gzipper.Services.Threads
                 archiverThread.Start();
                 
                 var processingBlock = new ProcessingBlock(archiverThread, byteBlock);
-
+                
                 _blocksQueue.Enqueue(processingBlock);
             }
             _blocksQueue.CompleteAdding();

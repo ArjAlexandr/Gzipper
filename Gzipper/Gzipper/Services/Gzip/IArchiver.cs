@@ -4,6 +4,6 @@ namespace Gzipper.Services.Gzip
 {
     public interface IArchiver
     {
-        void Process(ByteBlock data);
+        void Process(ByteBlock byteBlock);
     }
 }

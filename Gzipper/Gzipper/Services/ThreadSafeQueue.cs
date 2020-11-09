@@ -7,8 +7,8 @@ namespace Gzipper.Services
     public class ThreadSafeQueue<T> : IDisposable
     {
         private readonly Queue<T> _queue = new Queue<T>();
-        private readonly SemaphoreSlim _takeSemaphore = new SemaphoreSlim(0);
-        private readonly CancellationTokenSource _takeCancellationTokenSource = new CancellationTokenSource();
+        private readonly SemaphoreSlim _dequeueSemaphore = new SemaphoreSlim(0);
+        private readonly CancellationTokenSource _dequeueCancellationTokenSource = new CancellationTokenSource();
         private readonly object _blockObject = new object();
 
         private bool _isDisposed;
@@ -20,7 +20,7 @@ namespace Gzipper.Services
             {
                 CheckDisposed();
 
-                return _takeSemaphore.CurrentCount == 0 && _takeCancellationTokenSource.IsCancellationRequested;
+                return _dequeueSemaphore.CurrentCount == 0 && _dequeueCancellationTokenSource.IsCancellationRequested;
             }
         }
 
@@ -37,7 +37,7 @@ namespace Gzipper.Services
             finally
             {
                 Monitor.Exit(_blockObject);
-                _takeSemaphore.Release();
+                _dequeueSemaphore.Release();
             }
         }
 
@@ -45,7 +45,7 @@ namespace Gzipper.Services
         {
             CheckDisposed();
 
-            var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _takeCancellationTokenSource.Token).Token;
+            var linkedCancellationToken = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _dequeueCancellationTokenSource.Token).Token;
 
             if (IsCompleted)
             {
@@ -54,11 +54,15 @@ namespace Gzipper.Services
 
             try
             {
-                var waitSuccessful = _takeSemaphore.Wait(0);
+                var waitSuccessful = _dequeueSemaphore.Wait(0);
                 if (!waitSuccessful)
                 {
-                    _takeSemaphore.Wait(cancellationTokenSource);
+                    _dequeueSemaphore.Wait(linkedCancellationToken);
                 }
+            }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                throw;
             }
             catch (OperationCanceledException)
             {
@@ -81,7 +85,7 @@ namespace Gzipper.Services
         {
             CheckDisposed();
 
-            _takeCancellationTokenSource.Cancel();
+            _dequeueCancellationTokenSource.Cancel();
         }
 
         public void Dispose()
@@ -91,8 +95,8 @@ namespace Gzipper.Services
                 return;
             }
 
-            _takeSemaphore.Dispose();
-            _takeCancellationTokenSource.Dispose();
+            _dequeueSemaphore.Dispose();
+            _dequeueCancellationTokenSource.Dispose();
 
             _isDisposed = true;
         }
